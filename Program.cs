@@ -32,6 +32,22 @@ builder.Services.ConfigureApplicationCookie(options =>
 
 var app = builder.Build();
 
+// Ensure required directories exist (for Azure deployment)
+if (app.Environment.IsProduction())
+{
+    var dbDirectory = "/home/data";
+    if (!Directory.Exists(dbDirectory))
+    {
+        Directory.CreateDirectory(dbDirectory);
+    }
+
+    var uploadsDirectory = Path.Combine(app.Environment.WebRootPath, "uploads", "profiles");
+    if (!Directory.Exists(uploadsDirectory))
+    {
+        Directory.CreateDirectory(uploadsDirectory);
+    }
+}
+
 // Seed the database
 using (var scope = app.Services.CreateScope())
 {
