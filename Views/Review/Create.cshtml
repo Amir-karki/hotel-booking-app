@@ -1,0 +1,76 @@
+@model ReviewViewModel
+@{
+    ViewData["Title"] = "Write a Review";
+}
+
+<div class="container py-4">
+    <div class="mb-3">
+        <a asp-controller="Home" asp-action="HotelDetails" asp-route-id="@Model.HotelId" class="btn btn-pill btn-outline">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <line x1="19" y1="12" x2="5" y2="12"></line>
+                <polyline points="12 19 5 12 12 5"></polyline>
+            </svg>
+            Back to Hotel
+        </a>
+    </div>
+
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card">
+                <div class="card-body">
+                    <h1 class="mb-4">Write a Review</h1>
+
+                    @if (Model.Hotel != null)
+                    {
+                        <div class="mb-4">
+                            <h3>@Model.Hotel.Name</h3>
+                            <p class="text-muted">@Model.Hotel.City, @Model.Hotel.Country</p>
+                        </div>
+                    }
+
+                    <form asp-action="Create" method="post">
+                        <input type="hidden" asp-for="HotelId" />
+                        <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+                        <div class="mb-4">
+                            <label asp-for="Rating" class="form-label"></label>
+                            <div class="rating-input">
+                                @for (int i = 5; i >= 1; i--)
+                                {
+                                    <input type="radio" name="Rating" id="star@(i)" value="@i" @(Model.Rating == i ? "checked" : "") />
+                                    <label for="star@(i)">
+                                        <svg width="32" height="32" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="2">
+                                            <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+                                        </svg>
+                                    </label>
+                                }
+                            </div>
+                            <span asp-validation-for="Rating" class="text-danger"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="Title" class="form-label"></label>
+                            <input asp-for="Title" class="form-control" placeholder="Summarize your experience" />
+                            <span asp-validation-for="Title" class="text-danger"></span>
+                        </div>
+
+                        <div class="mb-4">
+                            <label asp-for="Comment" class="form-label"></label>
+                            <textarea asp-for="Comment" rows="6" class="form-control" placeholder="Tell us about your stay..."></textarea>
+                            <span asp-validation-for="Comment" class="text-danger"></span>
+                        </div>
+
+                        <div class="d-flex gap-2">
+                            <button type="submit" class="btn btn-pill btn-primary">Submit Review</button>
+                            <a asp-controller="Home" asp-action="HotelDetails" asp-route-id="@Model.HotelId" class="btn btn-pill btn-outline">Cancel</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

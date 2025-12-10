@@ -1,0 +1,87 @@
+@model Booking
+@{
+    ViewData["Title"] = "Booking Details";
+    Layout = "_AdminLayout";
+}
+
+<div class="mb-3">
+    <a asp-action="Index" class="btn btn-pill btn-outline">Back to List</a>
+</div>
+
+<div class="card">
+    <div class="card-body">
+        <h1 class="mb-4">Booking Details #@Model.Id.ToString().PadLeft(6, '0')</h1>
+
+        <div class="row">
+            <div class="col-md-6">
+                <h3>Guest Information</h3>
+                <dl class="row">
+                    <dt class="col-sm-4">Name:</dt>
+                    <dd class="col-sm-8">@Model.GuestFullName</dd>
+
+                    <dt class="col-sm-4">Email:</dt>
+                    <dd class="col-sm-8">@Model.GuestEmail</dd>
+
+                    <dt class="col-sm-4">Phone:</dt>
+                    <dd class="col-sm-8">@Model.GuestPhone</dd>
+
+                    <dt class="col-sm-4">Guests:</dt>
+                    <dd class="col-sm-8">@Model.NumberOfGuests</dd>
+                </dl>
+
+                @if (!string.IsNullOrEmpty(Model.SpecialRequests))
+                {
+                    <h4>Special Requests</h4>
+                    <p>@Model.SpecialRequests</p>
+                }
+            </div>
+
+            <div class="col-md-6">
+                <h3>Booking Information</h3>
+                <dl class="row">
+                    <dt class="col-sm-4">Hotel:</dt>
+                    <dd class="col-sm-8">@Model.Room.Hotel.Name</dd>
+
+                    <dt class="col-sm-4">Room Type:</dt>
+                    <dd class="col-sm-8">@Model.Room.RoomType</dd>
+
+                    <dt class="col-sm-4">Check-in:</dt>
+                    <dd class="col-sm-8">@Model.CheckInDate.ToString("dddd, MMMM dd, yyyy")</dd>
+
+                    <dt class="col-sm-4">Check-out:</dt>
+                    <dd class="col-sm-8">@Model.CheckOutDate.ToString("dddd, MMMM dd, yyyy")</dd>
+
+                    <dt class="col-sm-4">Total Price:</dt>
+                    <dd class="col-sm-8"><strong>$@Model.TotalPrice.ToString("N2")</strong></dd>
+
+                    <dt class="col-sm-4">Status:</dt>
+                    <dd class="col-sm-8">
+                        <span class="badge badge-@Model.Status.ToString().ToLower()">
+                            @Model.Status
+                        </span>
+                    </dd>
+
+                    <dt class="col-sm-4">Booked At:</dt>
+                    <dd class="col-sm-8">@Model.BookedAt.ToString("MMMM dd, yyyy HH:mm")</dd>
+
+                    <dt class="col-sm-4">Payment ID:</dt>
+                    <dd class="col-sm-8"><small class="text-muted">@Model.PaymentIntentId</small></dd>
+                </dl>
+            </div>
+        </div>
+
+        <div class="mt-4">
+            <h3>Update Status</h3>
+            <form asp-action="UpdateStatus" asp-route-id="@Model.Id" method="post" class="d-inline-flex gap-2">
+                @Html.AntiForgeryToken()
+                <select name="status" class="form-control" style="width: auto;">
+                    <option value="@BookingStatus.Pending" selected="@(Model.Status == BookingStatus.Pending)">Pending</option>
+                    <option value="@BookingStatus.Confirmed" selected="@(Model.Status == BookingStatus.Confirmed)">Confirmed</option>
+                    <option value="@BookingStatus.Cancelled" selected="@(Model.Status == BookingStatus.Cancelled)">Cancelled</option>
+                    <option value="@BookingStatus.Completed" selected="@(Model.Status == BookingStatus.Completed)">Completed</option>
+                </select>
+                <button type="submit" class="btn btn-pill btn-primary">Update Status</button>
+            </form>
+        </div>
+    </div>
+</div>

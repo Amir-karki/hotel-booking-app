@@ -1,0 +1,184 @@
+@model HotelBookingApp.Models.ViewModels.ErrorViewModel
+@{
+    ViewData["Title"] = "Error";
+}
+
+<div class="container">
+    <div class="error-page">
+        <div class="error-icon">
+            <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="10"></circle>
+                <line x1="12" y1="8" x2="12" y2="12"></line>
+                <line x1="12" y1="16" x2="12.01" y2="16"></line>
+            </svg>
+        </div>
+
+        <h1 class="error-title">Oops! Something went wrong</h1>
+
+        <p class="error-message">
+            We're sorry, but an unexpected error has occurred. Our team has been notified and we're working to fix the issue.
+        </p>
+
+        @if (Model?.ShowRequestId == true)
+        {
+            <div class="error-request-id">
+                <p>
+                    <strong>Request ID:</strong> <code>@Model.RequestId</code>
+                </p>
+                <p class="text-muted">Please provide this ID when contacting support.</p>
+            </div>
+        }
+
+        @if (!string.IsNullOrEmpty(Model?.ExceptionMessage))
+        {
+            <div class="error-details">
+                <h3>Error Details</h3>
+                <div class="error-detail-box">
+                    <p><strong>Message:</strong></p>
+                    <pre>@Model.ExceptionMessage</pre>
+
+                    @if (!string.IsNullOrEmpty(Model.ExceptionStackTrace))
+                    {
+                        <p><strong>Stack Trace:</strong></p>
+                        <pre class="stack-trace">@Model.ExceptionStackTrace</pre>
+                    }
+                </div>
+            </div>
+        }
+
+        <div class="error-actions">
+            <a asp-controller="Home" asp-action="Index" class="btn btn-primary">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align: middle; margin-right: 8px;">
+                    <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+                    <polyline points="9 22 9 12 15 12 15 22"></polyline>
+                </svg>
+                Return to Home
+            </a>
+            <button onclick="history.back()" class="btn btn-outline">Go Back</button>
+        </div>
+    </div>
+</div>
+
+<style>
+    .error-page {
+        text-align: center;
+        padding: 4rem 2rem;
+        max-width: 800px;
+        margin: 0 auto;
+    }
+
+    .error-icon {
+        color: var(--danger);
+        margin-bottom: 2rem;
+        animation: pulse 2s ease-in-out infinite;
+    }
+
+    @@keyframes pulse {
+        0%, 100% {
+            opacity: 1;
+        }
+        50% {
+            opacity: 0.5;
+        }
+    }
+
+    .error-title {
+        font-size: 2.5rem;
+        font-weight: 700;
+        margin-bottom: 1rem;
+        color: var(--text-primary);
+    }
+
+    .error-message {
+        font-size: 1.125rem;
+        color: var(--text-secondary);
+        margin-bottom: 2rem;
+        line-height: 1.6;
+    }
+
+    .error-request-id {
+        background-color: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        padding: 1.5rem;
+        margin-bottom: 2rem;
+    }
+
+    .error-request-id code {
+        background-color: var(--background);
+        padding: 0.25rem 0.5rem;
+        border-radius: 4px;
+        font-family: 'Courier New', monospace;
+        color: var(--primary);
+    }
+
+    .error-details {
+        text-align: left;
+        margin-top: 3rem;
+        margin-bottom: 2rem;
+    }
+
+    .error-details h3 {
+        color: var(--danger);
+        margin-bottom: 1rem;
+    }
+
+    .error-detail-box {
+        background-color: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        padding: 1.5rem;
+        overflow-x: auto;
+    }
+
+    .error-detail-box pre {
+        background-color: var(--background);
+        padding: 1rem;
+        border-radius: 4px;
+        overflow-x: auto;
+        margin: 0.5rem 0;
+        font-size: 0.875rem;
+        line-height: 1.5;
+        white-space: pre-wrap;
+        word-wrap: break-word;
+    }
+
+    .error-detail-box .stack-trace {
+        max-height: 300px;
+        overflow-y: auto;
+        font-size: 0.75rem;
+    }
+
+    .error-actions {
+        display: flex;
+        gap: 1rem;
+        justify-content: center;
+        flex-wrap: wrap;
+        margin-top: 2rem;
+    }
+
+    .text-muted {
+        color: var(--text-secondary);
+        font-size: 0.875rem;
+        margin-top: 0.5rem;
+    }
+
+    @@media (max-width: 768px) {
+        .error-title {
+            font-size: 2rem;
+        }
+
+        .error-page {
+            padding: 2rem 1rem;
+        }
+
+        .error-actions {
+            flex-direction: column;
+            width: 100%;
+        }
+
+        .error-actions .btn {
+            width: 100%;
+        }
+    }
+</style>

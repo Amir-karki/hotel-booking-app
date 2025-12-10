@@ -1,0 +1,85 @@
+erDiagram
+    ASPNETUSERS ||--o{ BOOKINGS : "makes"
+    ASPNETUSERS ||--o{ REVIEWS : "writes"
+    HOTELS ||--|{ ROOMS : "has"
+    HOTELS ||--o{ REVIEWS : "receives"
+    ROOMS ||--o{ ROOMIAMGES : "displays"
+    ROOMS ||--o{ BOOKINGS : "booked_as"
+
+    ASPNETUSERS {
+        string Id PK
+        string Email
+        string UserName
+        string PasswordHash
+        string FirstName
+        string LastName
+        string ProfilePictureUrl
+        bool EmailConfirmed
+        string PhoneNumber
+        datetime CreatedAt
+    }
+
+    HOTELS {
+        int Id PK
+        string Name
+        string Description
+        string Address
+        string City
+        string Country
+        int StarRating
+        string ImageUrl
+        bool IsActive
+        datetime CreatedAt
+    }
+
+    ROOMS {
+        int Id PK
+        int HotelId FK
+        string RoomType
+        string Description
+        decimal PricePerNight
+        int Capacity
+        int TotalRooms
+        bool IsAvailable
+        bool HasWifi
+        bool HasAirConditioning
+        bool HasTelevision
+        bool HasMinibar
+        bool HasBalcony
+        datetime CreatedAt
+    }
+
+    ROOMIAMGES {
+        int Id PK
+        int RoomId FK
+        string ImageUrl
+        int DisplayOrder
+        datetime CreatedAt
+    }
+
+    BOOKINGS {
+        int Id PK
+        int RoomId FK
+        string UserId FK
+        datetime CheckInDate
+        datetime CheckOutDate
+        int NumberOfGuests
+        decimal TotalPrice
+        string GuestFullName
+        string GuestEmail
+        string GuestPhone
+        string SpecialRequests
+        int Status
+        string PaymentIntentId
+        datetime BookedAt
+    }
+
+    REVIEWS {
+        int Id PK
+        int HotelId FK
+        string UserId FK
+        int Rating
+        string Title
+        string Comment
+        datetime CreatedAt
+    }

@@ -1,0 +1,218 @@
+@model BookingViewModel
+@{
+    ViewData["Title"] = "Complete Your Booking";
+    var nights = (Model.CheckOutDate - Model.CheckInDate).Days;
+    var totalPrice = Model.Room != null ? Model.Room.PricePerNight * nights : 0;
+}
+
+<div class="container py-4">
+    <div class="mb-3">
+        <a asp-controller="Home" asp-action="HotelDetails" asp-route-id="@Model.Room?.HotelId" class="btn btn-pill btn-outline">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <line x1="19" y1="12" x2="5" y2="12"></line>
+                <polyline points="12 19 5 12 12 5"></polyline>
+            </svg>
+            Back to Hotel
+        </a>
+    </div>
+
+    <h1 class="mb-4">Complete Your Booking</h1>
+
+    <div class="row">
+        <div class="col-lg-8">
+            <form asp-action="Create" method="post" class="booking-form">
+                <input type="hidden" asp-for="RoomId" />
+
+                <div class="card mb-4">
+                    <div class="card-body">
+                        <h3 class="card-title">Booking Details</h3>
+                        <div class="validation-summary" asp-validation-summary="ModelOnly"></div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="CheckInDate" class="form-label"></label>
+                                <input asp-for="CheckInDate" type="date" class="form-control" />
+                                <span asp-validation-for="CheckInDate" class="text-danger"></span>
+                            </div>
+
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="CheckOutDate" class="form-label"></label>
+                                <input asp-for="CheckOutDate" type="date" class="form-control" />
+                                <span asp-validation-for="CheckOutDate" class="text-danger"></span>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="NumberOfGuests" class="form-label"></label>
+                            <input asp-for="NumberOfGuests" type="number" min="1" max="@Model.Room?.Capacity" class="form-control" />
+                            <span asp-validation-for="NumberOfGuests" class="text-danger"></span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card mb-4">
+                    <div class="card-body">
+                        <h3 class="card-title">Guest Information</h3>
+
+                        <div class="mb-3">
+                            <label asp-for="GuestFullName" class="form-label"></label>
+                            <input asp-for="GuestFullName" class="form-control" />
+                            <span asp-validation-for="GuestFullName" class="text-danger"></span>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="GuestEmail" class="form-label"></label>
+                                <input asp-for="GuestEmail" type="email" class="form-control" />
+                                <span asp-validation-for="GuestEmail" class="text-danger"></span>
+                            </div>
+
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="GuestPhone" class="form-label"></label>
+                                <input asp-for="GuestPhone" type="tel" class="form-control" />
+                                <span asp-validation-for="GuestPhone" class="text-danger"></span>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="SpecialRequests" class="form-label"></label>
+                            <textarea asp-for="SpecialRequests" rows="3" class="form-control"></textarea>
+                            <span asp-validation-for="SpecialRequests" class="text-danger"></span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card mb-4">
+                    <div class="card-body">
+                        <h3 class="card-title">Payment Information</h3>
+                        <p class="text-muted mb-3">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <rect x="1" y="4" width="22" height="16" rx="2" ry="2"></rect>
+                                <line x1="1" y1="10" x2="23" y2="10"></line>
+                            </svg>
+                            Your payment information is secure (Mock Payment)
+                        </p>
+
+                        <div class="mb-3">
+                            <label asp-for="CardNumber" class="form-label"></label>
+                            <input asp-for="CardNumber" type="text" class="form-control" placeholder="4242 4242 4242 4242" maxlength="19" />
+                            <span asp-validation-for="CardNumber" class="text-danger"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="CardholderName" class="form-label"></label>
+                            <input asp-for="CardholderName" type="text" class="form-control" placeholder="John Doe" />
+                            <span asp-validation-for="CardholderName" class="text-danger"></span>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="ExpiryDate" class="form-label"></label>
+                                <input asp-for="ExpiryDate" type="text" class="form-control" placeholder="MM/YY" maxlength="5" />
+                                <span asp-validation-for="ExpiryDate" class="text-danger"></span>
+                            </div>
+
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="CVV" class="form-label"></label>
+                                <input asp-for="CVV" type="text" class="form-control" placeholder="123" maxlength="4" />
+                                <span asp-validation-for="CVV" class="text-danger"></span>
+                            </div>
+                        </div>
+
+                        <div class="alert alert-info">
+                            <strong>Test Card:</strong> Use 4242 4242 4242 4242 with any future expiry date and any CVV.
+                        </div>
+                    </div>
+                </div>
+
+                <button type="submit" class="btn btn-pill btn-primary btn-lg w-100">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M12 2L2 7l10 5 10-5-10-5z"></path>
+                        <path d="M2 17l10 5 10-5"></path>
+                        <path d="M2 12l10 5 10-5"></path>
+                    </svg>
+                    Confirm Booking & Pay $@totalPrice.ToString("N2")
+                </button>
+            </form>
+        </div>
+
+        <div class="col-lg-4">
+            <div class="card booking-summary">
+                <div class="card-body">
+                    <h3 class="card-title">Booking Summary</h3>
+
+                    @if (Model.Room != null)
+                    {
+                        <div class="mb-3">
+                            <h4 class="summary-hotel">@Model.Room.Hotel.Name</h4>
+                            <p class="text-muted mb-1">@Model.Room.Hotel.City, @Model.Room.Hotel.Country</p>
+                        </div>
+
+                        <div class="summary-divider"></div>
+
+                        <div class="mb-3">
+                            <h5>@Model.Room.RoomType</h5>
+                            <p class="text-muted">@Model.Room.Description</p>
+                        </div>
+
+                        <div class="summary-divider"></div>
+
+                        <div class="summary-details">
+                            <div class="summary-row">
+                                <span>Check-in:</span>
+                                <strong>@Model.CheckInDate.ToString("MMM dd, yyyy")</strong>
+                            </div>
+                            <div class="summary-row">
+                                <span>Check-out:</span>
+                                <strong>@Model.CheckOutDate.ToString("MMM dd, yyyy")</strong>
+                            </div>
+                            <div class="summary-row">
+                                <span>Guests:</span>
+                                <strong>@Model.NumberOfGuests</strong>
+                            </div>
+                        </div>
+
+                        <div class="summary-divider"></div>
+
+                        <div class="summary-price">
+                            <div class="summary-row">
+                                <span>$@Model.Room.PricePerNight.ToString("N2") × @nights nights</span>
+                                <span>$@totalPrice.ToString("N2")</span>
+                            </div>
+                            <div class="summary-row summary-total">
+                                <strong>Total</strong>
+                                <strong>$@totalPrice.ToString("N2")</strong>
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script>
+        // Format card number
+        document.querySelector('input[name="CardNumber"]')?.addEventListener('input', function(e) {
+            let value = e.target.value.replace(/\s/g, '');
+            let formattedValue = value.match(/.{1,4}/g)?.join(' ') || value;
+            e.target.value = formattedValue;
+        });
+
+        // Format expiry date
+        document.querySelector('input[name="ExpiryDate"]')?.addEventListener('input', function(e) {
+            let value = e.target.value.replace(/\D/g, '');
+            if (value.length >= 2) {
+                value = value.substring(0, 2) + '/' + value.substring(2, 4);
+            }
+            e.target.value = value;
+        });
+
+        // Only allow numbers in CVV
+        document.querySelector('input[name="CVV"]')?.addEventListener('input', function(e) {
+            e.target.value = e.target.value.replace(/\D/g, '');
+        });
+    </script>
+}

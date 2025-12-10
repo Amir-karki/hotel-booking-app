@@ -1,0 +1,265 @@
+@model Hotel
+@{
+    ViewData["Title"] = Model.Name;
+}
+
+<div class="container py-4">
+    <div class="mb-3">
+        <a asp-action="Index" class="btn btn-pill btn-outline">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <line x1="19" y1="12" x2="5" y2="12"></line>
+                <polyline points="12 19 5 12 12 5"></polyline>
+            </svg>
+            Back to Hotels
+        </a>
+    </div>
+
+    <div class="hotel-details-header">
+        <div>
+            <h1>@Model.Name</h1>
+            <p class="hotel-location">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+                    <circle cx="12" cy="10" r="3"></circle>
+                </svg>
+                @Model.Address, @Model.City, @Model.Country
+            </p>
+        </div>
+        <div class="hotel-rating-badge">
+            @for (int i = 0; i < Model.StarRating; i++)
+            {
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                    <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+                </svg>
+            }
+        </div>
+    </div>
+
+    @if (!string.IsNullOrEmpty(Model.ImageUrl))
+    {
+        <div class="hotel-main-image mb-4">
+            <img src="@Model.ImageUrl" alt="@Model.Name" onerror="this.src='https://via.placeholder.com/1200x600?text=Hotel+Image'" />
+        </div>
+    }
+
+    <div class="card mb-4">
+        <div class="card-body">
+            <h2 class="mb-3">About This Hotel</h2>
+            <p>@Model.Description</p>
+        </div>
+    </div>
+
+    <div class="mb-4">
+        <h2 class="mb-3">Available Rooms</h2>
+
+        @if (Model.Rooms.Any(r => r.IsAvailable))
+        {
+            <div class="room-list">
+                @foreach (var room in Model.Rooms.Where(r => r.IsAvailable))
+                {
+                    <div class="room-card">
+                        @if (room.RoomImages.Any())
+                        {
+                            <div class="room-slider" data-room-id="@room.Id">
+                                <div class="slider-container">
+                                    @foreach (var image in room.RoomImages.OrderBy(i => i.DisplayOrder))
+                                    {
+                                        <div class="slider-slide">
+                                            <img src="@image.ImageUrl" alt="@room.RoomType" onerror="this.src='https://via.placeholder.com/600x400?text=Room+Image'" />
+                                        </div>
+                                    }
+                                </div>
+                                @if (room.RoomImages.Count > 1)
+                                {
+                                    <button class="slider-btn slider-prev" onclick="moveSlide(@room.Id, -1)">
+                                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                            <polyline points="15 18 9 12 15 6"></polyline>
+                                        </svg>
+                                    </button>
+                                    <button class="slider-btn slider-next" onclick="moveSlide(@room.Id, 1)">
+                                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                            <polyline points="9 18 15 12 9 6"></polyline>
+                                        </svg>
+                                    </button>
+                                    <div class="slider-dots">
+                                        @for (int i = 0; i < room.RoomImages.Count; i++)
+                                        {
+                                            <span class="slider-dot @(i == 0 ? "active" : "")" onclick="goToSlide(@room.Id, @i)"></span>
+                                        }
+                                    </div>
+                                }
+                            </div>
+                        }
+
+                        <div class="room-content">
+                            <h3>@room.RoomType</h3>
+                            <p class="room-description">@room.Description</p>
+
+                            <div class="room-amenities">
+                                <span class="amenity-badge">
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                                        <circle cx="9" cy="7" r="4"></circle>
+                                        <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+                                        <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+                                    </svg>
+                                    Up to @room.Capacity guests
+                                </span>
+                                @if (room.HasWifi)
+                                {
+                                    <span class="amenity-badge">
+                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                            <path d="M5 12.55a11 11 0 0 1 14.08 0"></path>
+                                            <path d="M1.42 9a16 16 0 0 1 21.16 0"></path>
+                                            <path d="M8.53 16.11a6 6 0 0 1 6.95 0"></path>
+                                            <line x1="12" y1="20" x2="12.01" y2="20"></line>
+                                        </svg>
+                                        Free WiFi
+                                    </span>
+                                }
+                                @if (room.HasAirConditioning)
+                                {
+                                    <span class="amenity-badge">AC</span>
+                                }
+                                @if (room.HasTelevision)
+                                {
+                                    <span class="amenity-badge">TV</span>
+                                }
+                                @if (room.HasMinibar)
+                                {
+                                    <span class="amenity-badge">Minibar</span>
+                                }
+                                @if (room.HasBalcony)
+                                {
+                                    <span class="amenity-badge">Balcony</span>
+                                }
+                            </div>
+
+                            <div class="room-footer">
+                                <div class="room-price">
+                                    <strong>$@room.PricePerNight.ToString("N2")</strong>
+                                    <span>/night</span>
+                                </div>
+                                @if (User.Identity?.IsAuthenticated == true)
+                                {
+                                    <a asp-controller="Booking" asp-action="Create" asp-route-roomId="@room.Id" class="btn btn-pill btn-primary">Book Now</a>
+                                }
+                                else
+                                {
+                                    <a asp-controller="Account" asp-action="Login" asp-route-returnUrl="@Url.Action("Create", "Booking", new { roomId = room.Id })" class="btn btn-pill btn-primary">Login to Book</a>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        }
+        else
+        {
+            <div class="alert alert-info">No rooms are currently available at this hotel.</div>
+        }
+    </div>
+
+    <div class="mb-4">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <h2>Guest Reviews (@Model.Reviews.Count)</h2>
+            @if (User.Identity?.IsAuthenticated == true)
+            {
+                <a asp-controller="Review" asp-action="Create" asp-route-hotelId="@Model.Id" class="btn btn-pill btn-outline">Write a Review</a>
+            }
+        </div>
+
+        @if (Model.Reviews.Any())
+        {
+            <div class="mb-3">
+                <div class="average-rating">
+                    <span class="rating-score-large">@Model.AverageRating.ToString("F1")</span>
+                    <div>
+                        <div class="rating-stars">
+                            @for (int i = 1; i <= 5; i++)
+                            {
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="@(i <= Model.AverageRating ? "currentColor" : "none")" stroke="currentColor" stroke-width="2">
+                                    <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+                                </svg>
+                            }
+                        </div>
+                        <p class="text-muted">Based on @Model.Reviews.Count reviews</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="reviews-list">
+                @foreach (var review in Model.Reviews.OrderByDescending(r => r.CreatedAt))
+                {
+                    <div class="review-card">
+                        <div class="review-header">
+                            <div>
+                                <div class="review-author">@review.User.FirstName @review.User.LastName</div>
+                                <div class="review-date">@review.CreatedAt.ToString("MMMM dd, yyyy")</div>
+                            </div>
+                            <div class="review-rating">
+                                @for (int i = 0; i < review.Rating; i++)
+                                {
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                                        <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+                                    </svg>
+                                }
+                            </div>
+                        </div>
+                        <h4 class="review-title">@review.Title</h4>
+                        <p class="review-comment">@review.Comment</p>
+                    </div>
+                }
+            </div>
+        }
+        else
+        {
+            <div class="empty-state">
+                <p>No reviews yet. Be the first to review this hotel!</p>
+            </div>
+        }
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        const sliderStates = {};
+
+        document.querySelectorAll('.room-slider').forEach(slider => {
+            const roomId = slider.getAttribute('data-room-id');
+            sliderStates[roomId] = 0;
+        });
+
+        function moveSlide(roomId, direction) {
+            const slider = document.querySelector(`.room-slider[data-room-id="${roomId}"]`);
+            const slides = slider.querySelectorAll('.slider-slide');
+            const dots = slider.querySelectorAll('.slider-dot');
+
+            sliderStates[roomId] = (sliderStates[roomId] + direction + slides.length) % slides.length;
+
+            slides.forEach((slide, index) => {
+                slide.style.transform = `translateX(-${sliderStates[roomId] * 100}%)`;
+            });
+
+            dots.forEach((dot, index) => {
+                dot.classList.toggle('active', index === sliderStates[roomId]);
+            });
+        }
+
+        function goToSlide(roomId, index) {
+            const slider = document.querySelector(`.room-slider[data-room-id="${roomId}"]`);
+            const slides = slider.querySelectorAll('.slider-slide');
+            const dots = slider.querySelectorAll('.slider-dot');
+
+            sliderStates[roomId] = index;
+
+            slides.forEach((slide) => {
+                slide.style.transform = `translateX(-${index * 100}%)`;
+            });
+
+            dots.forEach((dot, i) => {
+                dot.classList.toggle('active', i === index);
+            });
+        }
+    </script>
+}

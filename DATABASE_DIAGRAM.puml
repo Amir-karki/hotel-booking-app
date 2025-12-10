@@ -1,0 +1,154 @@
+@startuml Hotel Booking Database ER Diagram
+
+!define primary_key(x) <b><color:red>PK</color> x</b>
+!define foreign_key(x) <b><color:green>FK</color> x</b>
+!define column(x) <color:black>x</color>
+
+skinparam backgroundColor #F8F9FA
+skinparam entity {
+    BackgroundColor White
+    BorderColor #2563EB
+    BorderThickness 2
+    FontColor #1F2937
+}
+
+skinparam class {
+    BackgroundColor White
+    BorderColor #2563EB
+    BorderThickness 2
+    FontColor #1F2937
+}
+
+title Hotel Booking Application - Database Schema
+
+entity "AspNetUsers" as users {
+  primary_key(Id : string)
+  --
+  column(Email : string)
+  column(UserName : string)
+  column(PasswordHash : string)
+  column(FirstName : string)
+  column(LastName : string)
+  column(ProfilePictureUrl : string)
+  column(EmailConfirmed : bool)
+  column(PhoneNumber : string)
+  column(CreatedAt : datetime)
+}
+
+entity "Hotels" as hotels {
+  primary_key(Id : int)
+  --
+  column(Name : string)
+  column(Description : string)
+  column(Address : string)
+  column(City : string)
+  column(Country : string)
+  column(StarRating : int 1-5)
+  column(ImageUrl : string)
+  column(IsActive : bool)
+  column(CreatedAt : datetime)
+}
+
+entity "Rooms" as rooms {
+  primary_key(Id : int)
+  foreign_key(HotelId : int)
+  --
+  column(RoomType : string)
+  column(Description : string)
+  column(PricePerNight : decimal)
+  column(Capacity : int)
+  column(TotalRooms : int)
+  column(IsAvailable : bool)
+  column(HasWifi : bool)
+  column(HasAirConditioning : bool)
+  column(HasTelevision : bool)
+  column(HasMinibar : bool)
+  column(HasBalcony : bool)
+  column(CreatedAt : datetime)
+}
+
+entity "RoomImages" as images {
+  primary_key(Id : int)
+  foreign_key(RoomId : int)
+  --
+  column(ImageUrl : string)
+  column(DisplayOrder : int)
+  column(CreatedAt : datetime)
+}
+
+entity "Bookings" as bookings {
+  primary_key(Id : int)
+  foreign_key(RoomId : int)
+  foreign_key(UserId : string)
+  --
+  column(CheckInDate : datetime)
+  column(CheckOutDate : datetime)
+  column(NumberOfGuests : int)
+  column(TotalPrice : decimal)
+  column(GuestFullName : string)
+  column(GuestEmail : string)
+  column(GuestPhone : string)
+  column(SpecialRequests : string)
+  column(Status : enum)
+  column(PaymentIntentId : string)
+  column(BookedAt : datetime)
+}
+
+entity "Reviews" as reviews {
+  primary_key(Id : int)
+  foreign_key(HotelId : int)
+  foreign_key(UserId : string)
+  --
+  column(Rating : int 1-5)
+  column(Title : string)
+  column(Comment : string)
+  column(CreatedAt : datetime)
+}
+
+' Relationships
+users ||--o{ bookings : "makes"
+users ||--o{ reviews : "writes"
+hotels ||--|{ rooms : "has"
+hotels ||--o{ reviews : "receives"
+rooms ||--o{ images : "displays"
+rooms ||--o{ bookings : "booked as"
+
+note right of hotels
+  <b>Average Rating</b>
+  Computed from Reviews
+end note
+
+note right of bookings
+  <b>Status Enum:</b>
+  - Pending
+  - Confirmed
+  - Cancelled
+  - Completed
+end note
+
+note bottom of rooms
+  <b>Business Rules:</b>
+  - PricePerNight: 0.01-100000
+  - Capacity: 1-10 guests
+  - TotalRooms: 1-100
+end note
+
+note left of reviews
+  <b>Constraints:</b>
+  - One review per user per hotel
+  - Only users with completed
+    bookings can review
+end note
+
+legend right
+  |= Symbol |= Meaning |
+  | <b><color:red>PK</color></b> | Primary Key |
+  | <b><color:green>FK</color></b> | Foreign Key |
+  | ||--|| | One to One |
+  | ||--o{ | One to Many |
+  | }o--o{ | Many to Many |
+endlegend
+
+center footer Database: SQLite | ORM: Entity Framework Core 8.0 | Auth: ASP.NET Core Identity
+
+@enduml
